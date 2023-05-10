@@ -1,0 +1,13 @@
+stages:
+  - helm
+
+upload-helm:
+  stage: helm
+  image: alpine/k8s:1.26.0
+  script:
+    - helm package ./momo-store-chart
+    - TGZ=$(ls *.tgz)
+    - curl -u $NEXUS_REPO_USER:$NEXUS_REPO_PASS $NEXUS_REPO_URL/$NEXUS_REPO_HELM/ --upload-file $TGZ
+  rules:
+    - changes:
+      - momo-store-chart/**/*

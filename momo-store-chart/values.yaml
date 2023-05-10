@@ -1,0 +1,56 @@
+backend:
+  image: gitlab.kudelich.ru:5050/k.kudelich/momo-store/momo-backend
+  imagePullPolicy: Always
+  replicas: 2
+  revisionHistoryLimit: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 20% 
+  service:
+    port: 8081
+  vpa:  
+    resourcePolicy:
+      containerPolicies:
+        minAllowed:
+          cpu: "0m"
+          memory: "0Mi"
+        maxAllowed:
+          cpu: 1
+          memory: "500Mi"
+  livenessProbe:   
+    httpGet:        
+      path: /health       
+      port: 8081      
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 2
+    failureThreshold: 6
+
+frontend:
+  replicas: 1
+  revisionHistoryLimit: 15
+  strategy:
+    type: Recreate
+  image: gitlab.kudelich.ru:5050/k.kudelich/momo-store/momo-frontend
+  imagePullPolicy: Always
+  service:
+    port: 8080
+  ingress:
+    host: "www.kudelich-store.site"
+    metadata:
+      annotations:
+        kubernetes_ingress_class: nginx
+        certmanager_cluster_issuer: letsencrypt-prod
+    spec:
+    tls:
+      secretName: letsencrypt      
+  production_issuer:
+    metadata:
+      name: letsencrypt-prod
+    spec:
+      acme:
+        email: abracadabra@gmail.com
+        privateKeySecretRef:
+          name: letsencrypt-prod-private-key

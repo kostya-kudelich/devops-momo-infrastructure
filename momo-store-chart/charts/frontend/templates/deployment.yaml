@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/component: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: "sausage-store"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:	
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+          ports:
+            - name: {{ .Chart.Name }}
+              containerPort: {{ .Values.service.port }}
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+      imagePullSecrets:
+        - name: docker-config-secret
+        

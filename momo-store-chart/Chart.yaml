@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+type: application
+name: momo-store
+description: Momo Store Helm Chart
+
+version: 1.0.451361
+appVersion: 1.0.451361
+
+dependencies:
+  - name: backend
+    version: 1.0.451361
+  - name: frontend
+    version: 1.0.451361

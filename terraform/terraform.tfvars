@@ -1,0 +1,15 @@
+token = ""
+cloud_id = ""
+folder_id = ""
+dns_domain = "kudelich-store.site"
+s3_bucket_name = "kudelich-momo-store"
+momo_store_dns_name = "www.kudelich-store.site"
+argocd_dns_name = "argocd.kudelich-store.site"
+argocd_secret_repo_url = ""
+argocd_secret_repo_username = "k.kudelich"
+argocd_secret_repo_password = ""
+momo_s3_terraform_state_key = ""
+momo_s3_terraform_state_secret = ""
+dockerconfigjson = ""
+
+

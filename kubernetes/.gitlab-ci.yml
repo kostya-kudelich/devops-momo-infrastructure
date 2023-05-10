@@ -1,0 +1,21 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - base64 -d $KUBE_CONFIG > ~/.kube/config
+    - cd kubernetes
+    - kubectl config set-context --current --namespace=default
+    - kubectl apply -f backend
+    - kubectl apply -f frontend
+    - rm ~/.kube/config
+  rules:
+    - changes:
+      - kubernetes/**/*
+  environment:
+    name: momo-store
+    
+    
+    

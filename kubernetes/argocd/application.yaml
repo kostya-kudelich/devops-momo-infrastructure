@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: momo-store
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: ''
+    repoURL: 'https://nexus.praktikum-services.ru/repository/momo-store-helm-konstantin-kudelich-06/'
+    targetRevision: 1.0.x
+    chart: momo-store
+    helm:
+      values: ""
+
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+ 

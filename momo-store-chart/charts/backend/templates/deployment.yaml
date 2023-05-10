@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/component: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: "momo-store"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}  
+    spec:
+      containers:
+        - image: {{ .Values.image }}:{{ .Chart.AppVersion }}
+          name: {{ .Chart.Name }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - name: {{ .Chart.Name }}
+              containerPort: {{ .Values.service.port }}
+          livenessProbe:   
+            httpGet:        
+              path: {{ .Values.livenessProbe.httpGet.path }}     
+              port: {{ .Values.livenessProbe.httpGet.port }}       
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }} 
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }} 
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }} 
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }} 
+      imagePullSecrets:
+        - name: docker-config-secret
